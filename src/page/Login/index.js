@@ -6,6 +6,7 @@ import { styled, useTheme } from '@mui/system';
 
 import { Formik } from "formik"
 import * as Yup from 'yup';
+import { BASE_URL } from '../../api/setting';
 
 
 const Root = styled('div')(({theme})=>({
@@ -39,7 +40,7 @@ const Form = styled('form')(({theme})=>({
   },
 }))
 
-const GOOGLE_HREF = "http://localhost:8080/oauth2/authorize/google?redirect_uri=http://localhost:3000/oauth2/redirect/google";
+const GOOGLE_HREF = `${BASE_URL}/oauth2/authorize/google?redirect_uri=${process.env.REACT_APP_REDIRECT_URI}`;
 
 export default function Login(props) {
 
