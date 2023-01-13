@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Backdrop, Button, CircularProgress, TextField, Typography } from '@mui/material';
 import { Google } from '@mui/icons-material';
@@ -7,6 +7,10 @@ import { styled, useTheme } from '@mui/system';
 import { Formik } from "formik"
 import * as Yup from 'yup';
 import { BASE_URL } from '../../api/setting';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { getUserAsync, requestLoginAsync } from '../../redux/modules/user';
+import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 
 const Root = styled('div')(({theme})=>({
@@ -43,10 +47,20 @@ const Form = styled('form')(({theme})=>({
 const GOOGLE_HREF = `${BASE_URL}/oauth2/authorize/google?redirect_uri=${process.env.REACT_APP_REDIRECT_URI}`;
 
 export default function Login(props) {
+  
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const {enqueueSnackbar} = useSnackbar();
 
   const [isLoading, setLoading] = useState(false);
 
-  const theme = useTheme();
+  const {isUserLoginFetching, isLogin, isUserInfo, isError} = useSelector((state)=>({
+    isUserLoginFetching: state.user.isUserLoginFetching,
+    isLogin: state.user.isLogin,
+    isUserInfo: state.user.isUserInfo,
+    isError: state.user.isError,
+  }), shallowEqual);
 
   const handleGoogleLogin = async() => {
     setLoading(true);
@@ -54,10 +68,34 @@ export default function Login(props) {
   }
 
   const handleSubmit = async(e) => { 
-    setLoading(true);
-    
-    setLoading(false);
+    dispatch(requestLoginAsync({
+      email: e.email,
+      password: e.password,
+    }));
   };
+
+  useEffect(() =>{
+    setLoading(isUserLoginFetching);
+  }, [isUserLoginFetching])
+
+  useEffect(() =>{
+    if(isLogin){
+      enqueueSnackbar('로그인 성공', { variant: 'success' } );
+      dispatch(getUserAsync());
+    }
+  }, [isLogin, enqueueSnackbar, dispatch])
+
+  useEffect(() =>{
+    if(isError){
+      enqueueSnackbar('로그인 실패. 아이디, 패스워드를 확인해주세요', { variant: 'error' } ); 
+    }
+  }, [isError, enqueueSnackbar])
+
+  useEffect(()=>{
+    if(isUserInfo){
+      navigate('/');
+    }
+  },[isUserInfo, navigate]);
 
   return (
     <Root>
@@ -77,10 +115,13 @@ export default function Login(props) {
           </Typography>
         </ContentHeader>
         <ContentBody>
+          <Typography>
+            테스트 계정: test@test.com 패스워드 : 123456
+          </Typography>
           <Formik
             initialValues={{
               email: 'test@test.com',
-              password: '123456'
+              password: '12345'
             }}
             validationSchema={
               Yup.object().shape({
@@ -139,6 +180,7 @@ export default function Login(props) {
               </Form>
             )}
           </Formik>
+
           <Button
             color='secondary'
             fullWidth

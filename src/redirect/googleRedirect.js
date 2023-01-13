@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 
 import { Backdrop, CircularProgress } from '@mui/material';
-import { getUserAsync } from '../redux/modules/user';
+import { getUserAsync, login } from '../redux/modules/user';
+
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -19,6 +20,7 @@ export default function GoogleRedirectView(props) {
     const accessToken = searchParams.get('accessToken');
     if(!!accessToken) {
       localStorage.setItem("ACCESS_TOKEN", accessToken);
+      dispath(login())
       dispath(getUserAsync());
     } 
     

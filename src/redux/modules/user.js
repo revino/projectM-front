@@ -7,8 +7,10 @@ const name = 'USER'
 const initialState = {
   isUserInfoFetching: false,
   isUserChannelFetching: false,
+  isUserLoginFetching: false,
   isUserInfo: false,
   isChannelInfo: false,
+  isLogin: false,
   isError: false,
   info:{
     name: '',
@@ -25,7 +27,12 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    logout: (state) =>{
+    login: (state) => {
+      state.isError = false;
+      state.isUserLoginFetching = false;
+      state.isLogin =  true;
+    },
+    logout: (state) => {
       state.isUserInfo = false;
       state.isChannelInfo = false;
       state.isError = false;
@@ -68,7 +75,30 @@ const userSlice = createSlice({
     builder.addCase(getUserChannelAsync.rejected, (state, action) => {
       return { ...state, isError: true,  isUserChannelFetching: false, isChannelInfo: false};
     })
+
+    //requestLogin
+    builder.addCase(requestLoginAsync.pending, (state, action) => {
+      return { ...state, isError: false, isUserLoginFetching: true, isLogin: false };
+    })
+    builder.addCase(requestLoginAsync.fulfilled, (state, action) => {
+      return { ...state, isError: false, isUserLoginFetching: false, isLogin: true };
+    })
+    builder.addCase(requestLoginAsync.rejected, (state, action) => {
+      return { ...state, isError: true,  isUserLoginFetching: false, isLogin: false};
+    })
   }
+})
+
+export const requestLoginAsync = createAsyncThunk(`${name}/LOGIN/GET`, async (data) =>{
+  const response = await API.user.requestLogin(data);
+
+  const accessToken = response.data.data;
+
+  if(!!accessToken) {
+    localStorage.setItem("ACCESS_TOKEN", accessToken);
+  } 
+
+  return;
 })
 
 export const getUserAsync = createAsyncThunk(`${name}/GET`, async () =>{
@@ -100,6 +130,6 @@ export const getUserChannelAsync = createAsyncThunk(`${name}_CHANNEL/GET`, async
   return payload;
 })
 
-export const { logout } = userSlice.actions
+export const { logout, login } = userSlice.actions
 
 export default userSlice.reducer;
