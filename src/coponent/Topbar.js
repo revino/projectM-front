@@ -10,7 +10,7 @@ const FlexGrow = styled('div')({
 })
 
 export default function Topbar(props) {
-  const { onSidebarOpen, minimal , ...rest } = props;
+  const { onOpen, minimal , ...rest } = props;
   const theme = useTheme();
   const navigate = useNavigate();
   const logoutHidden = useMediaQuery(theme => theme.breakpoints.down('md'));
@@ -51,7 +51,7 @@ export default function Topbar(props) {
             }
             {!menuHidden && <IconButton
               color="inherit"
-              onClick={onSidebarOpen}
+              onClick={onOpen}
             >
               <Menu/>
             </IconButton>

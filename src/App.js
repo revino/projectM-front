@@ -15,7 +15,7 @@ function App() {
     <ThemeProvider theme={theme} >
       <Suspense fallback={
         <Backdrop
-          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          sx={{ color: (theme) => theme.palette.background, zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={true}
         >
           <CircularProgress color="inherit" />

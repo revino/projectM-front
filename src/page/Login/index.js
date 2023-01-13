@@ -48,9 +48,14 @@ export default function Login(props) {
 
   const theme = useTheme();
 
+  const handleGoogleLogin = async() => {
+    setLoading(true);
+    window.location.href = GOOGLE_HREF;
+  }
+
   const handleSubmit = async(e) => { 
     setLoading(true);
-    //requestLogin({isLoginType:'email', email:e.email, password:e.password});
+    
     setLoading(false);
   };
 
@@ -58,7 +63,8 @@ export default function Login(props) {
     <Root>
       <Backdrop open={isLoading} sx={{
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        color: '#fff'}}>
+        color: (theme) => theme.palette.background
+      }}>
         <CircularProgress color='inherit'/>
       </Backdrop>
       <Content>
@@ -94,50 +100,50 @@ export default function Login(props) {
               values
             }) => (
               <Form onSubmit={handleSubmit}>
-                  <TextField
-                    error={Boolean(touched.email && errors.email)}
-                    fullWidth
-                    helperText={touched.email && errors.email}
-                    label="이메일 주소"
-                    margin="normal"
-                    name="email"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    type="email"
-                    value={values.email}
-                    variant="outlined"
-                  />
-                  <TextField
-                    error={Boolean(touched.password && errors.password)}
-                    fullWidth
-                    helperText={touched.password && errors.password}
-                    label="비밀번호"
-                    margin="normal"
-                    name="password"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    type="password"
-                    value={values.password}
-                    variant="outlined"
-                  />
-                  <Button
-                    color="primary"
-                    disabled={isSubmitting}
-                    fullWidth
-                    size="large"
-                    type="submit"
-                    variant="contained"
-                  >
-                    로그인
-                  </Button>
-                </Form>
+                <TextField
+                  error={Boolean(touched.email && errors.email)}
+                  fullWidth
+                  helperText={touched.email && errors.email}
+                  label="이메일 주소"
+                  margin="normal"
+                  name="email"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  type="email"
+                  value={values.email}
+                  variant="outlined"
+                />
+                <TextField
+                  error={Boolean(touched.password && errors.password)}
+                  fullWidth
+                  helperText={touched.password && errors.password}
+                  label="비밀번호"
+                  margin="normal"
+                  name="password"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  type="password"
+                  value={values.password}
+                  variant="outlined"
+                />
+                <Button
+                  color="primary"
+                  disabled={isSubmitting}
+                  fullWidth
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                >
+                  로그인
+                </Button>
+              </Form>
             )}
           </Formik>
           <Button
             color='secondary'
             fullWidth
             startIcon={<Google sx={{marginRight: (theme)=>theme.spacing(1)}}/>}
-            href={GOOGLE_HREF}
+            onClick={handleGoogleLogin}
             size="large"
             variant="contained"
             sx={{

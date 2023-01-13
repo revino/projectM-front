@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import clsx from 'clsx';
 
@@ -41,15 +41,16 @@ export default function MainLayout(props){
   });
   const [openSidebar, setOpenSidebar] = useState(false);
 
-  const handleSidebarOpen = () => {
-    setOpenSidebar(true);
+  const toggleDrawer = (open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    setOpenSidebar(!openSidebar);
   };
 
-  const handleSidebarClose = () => {
+  useEffect(() =>{
     setOpenSidebar(false);
-  };
-
-  const shouldOpenSidebar = isDesktop ? true : openSidebar;
+  }, [children])
 
   return (
     <Root
@@ -58,11 +59,14 @@ export default function MainLayout(props){
         [classes.shiftContent]: isDesktop
       })}
     >
-      <Topbar onSidebarOpen={handleSidebarOpen}/>
+      <Topbar 
+        onOpen={toggleDrawer(true)}
+      />
       <Sidebar
-        onClose={handleSidebarClose}
-        onOpen={handleSidebarOpen}
-        open={shouldOpenSidebar}
+        onClose={toggleDrawer(false)}
+        onOpen={toggleDrawer(true)}
+        open={isDesktop ? true : openSidebar}
+        //variant={isDesktop ? 'persistent' : 'temporary'}
         variant={isDesktop ? 'persistent' : 'temporary'}
       />
       <Main>

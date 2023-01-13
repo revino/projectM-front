@@ -17,7 +17,6 @@ export default function GoogleRedirectView(props) {
 
   useEffect(()=>{
     const accessToken = searchParams.get('accessToken');
-
     if(!!accessToken) {
       localStorage.setItem("ACCESS_TOKEN", accessToken);
       dispath(getUserAsync());

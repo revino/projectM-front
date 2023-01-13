@@ -44,9 +44,12 @@ export default function Sidebar(props) {
     <SwipeableDrawer
       anchor="left"
       onClose={onClose}
-      open={open}
       onOpen={onOpen}
+      open={open}
       variant={variant}
+      ModalProps={{
+        keepMounted: true, // Better open performance on mobile.
+      }}
       PaperProps={{
         sx: (theme) => ({
           width: 240,
