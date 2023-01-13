@@ -61,8 +61,6 @@ export default function ChannelUpdate(props) {
     
     setChannelInfo(data);
 
-    console.log(data.createdAt.slice(0,16))
-
     setInputs({
       id: data.id,
       name: data.name,

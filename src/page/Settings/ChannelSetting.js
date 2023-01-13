@@ -23,7 +23,6 @@ const Root = styled('div')(({theme})=>({
 
 const RefreshButton = styled(Button)(({theme})=>({
   fontWeight: 'bold',
-  fontSize: '1.2em'
 }))
 
 export default function ChannelSetting(props) {

@@ -36,6 +36,7 @@ const userSlice = createSlice({
       state.isUserInfo = false;
       state.isChannelInfo = false;
       state.isError = false;
+      state.isLogin = false;
       state.info = {
         name: '',
         email: '',
