@@ -95,7 +95,7 @@ export default function ChannelSetting(props) {
       { createModalOpen    && <AddModal Body={ChannelCreate} open={createModalOpen} handleClose={handleClose}/>}
       { subscriveModalOpen && <AddModal Body={ChannelSubscribe} open={subscriveModalOpen} handleClose={handleClose}/>}
       <Grid container spacing={4} sx={{
-        padding: (theme)=> theme.spacing(4),
+        padding: (theme)=> theme.spacing(2),
         paddingLeft: (theme)=> theme.spacing(0),
         paddingRight: (theme)=> theme.spacing(0),
         width: '100%'

@@ -4,7 +4,7 @@ import { Backdrop, Button, CircularProgress, TextField, Typography } from '@mui/
 import { Google } from '@mui/icons-material';
 import { styled, useTheme } from '@mui/system';
 
-import { Formik } from "formik"
+import { useFormik } from "formik"
 import * as Yup from 'yup';
 import { BASE_URL } from '../../api/setting';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
@@ -74,6 +74,20 @@ export default function Login(props) {
     }));
   };
 
+  const formik = useFormik({
+    initialValues : {
+      email: 'test@test.com',
+      password: '12345'
+    },
+    validationSchema : 
+      Yup.object().shape({
+        email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+        password: Yup.string().max(255).required('Password is required')
+      })
+    ,
+    onSubmit : handleSubmit
+  });
+
   useEffect(() =>{
     setLoading(isUserLoginFetching);
   }, [isUserLoginFetching])
@@ -118,68 +132,44 @@ export default function Login(props) {
           <Typography>
             테스트 계정: test@test.com 패스워드 : 123456
           </Typography>
-          <Formik
-            initialValues={{
-              email: 'test@test.com',
-              password: '12345'
-            }}
-            validationSchema={
-              Yup.object().shape({
-                email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-                password: Yup.string().max(255).required('Password is required')
-              })
-            }
-            onSubmit={handleSubmit}
-          >
-            {({
-              errors,
-              handleBlur,
-              handleChange,
-              handleSubmit,
-              isSubmitting,
-              touched,
-              values
-            }) => (
-              <Form onSubmit={handleSubmit}>
-                <TextField
-                  error={Boolean(touched.email && errors.email)}
-                  fullWidth
-                  helperText={touched.email && errors.email}
-                  label="이메일 주소"
-                  margin="normal"
-                  name="email"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  type="email"
-                  value={values.email}
-                  variant="outlined"
-                />
-                <TextField
-                  error={Boolean(touched.password && errors.password)}
-                  fullWidth
-                  helperText={touched.password && errors.password}
-                  label="비밀번호"
-                  margin="normal"
-                  name="password"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  type="password"
-                  value={values.password}
-                  variant="outlined"
-                />
-                <Button
-                  color="primary"
-                  disabled={isSubmitting}
-                  fullWidth
-                  size="large"
-                  type="submit"
-                  variant="contained"
-                >
-                  로그인
-                </Button>
-              </Form>
-            )}
-          </Formik>
+            <Form onSubmit={formik.handleSubmit}>
+              <TextField
+                error={Boolean(formik.touched.email && formik.errors.email)}
+                fullWidth
+                helperText={formik.touched.email && formik.errors.email}
+                label="이메일 주소"
+                margin="normal"
+                name="email"
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                type="email"
+                value={formik.values.email}
+                variant="outlined"
+              />
+              <TextField
+                error={Boolean(formik.touched.password && formik.errors.password)}
+                fullWidth
+                helperText={formik.touched.password && formik.errors.password}
+                label="비밀번호"
+                margin="normal"
+                name="password"
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                type="password"
+                value={formik.values.password}
+                variant="outlined"
+              />
+              <Button
+                color="primary"
+                disabled={formik.isSubmitting}
+                fullWidth
+                size="large"
+                type="submit"
+                variant="contained"
+              >
+                로그인
+              </Button>
+            </Form>
 
           <Button
             color='secondary'

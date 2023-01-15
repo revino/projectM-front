@@ -8,8 +8,10 @@ const initialState = {
   isUserInfoFetching: false,
   isUserChannelFetching: false,
   isUserLoginFetching: false,
+  isUserSettingFetching: false,
   isUserInfo: false,
   isChannelInfo: false,
+  isUserSetting: false,
   isLogin: false,
   isError: false,
   info:{
@@ -20,8 +22,13 @@ const initialState = {
   channel:{
     channelList: [],
     currentChannel: {},
+  },
+  setting:{
+    isSlackWebHook: false,
+    slackWebHookUrl: '',
   }
 };
+
 
 const userSlice = createSlice({
   name: 'user',
@@ -57,7 +64,8 @@ const userSlice = createSlice({
     builder.addCase(getUserAsync.fulfilled, (state, action) => {
       return { ...state, isError: false, isUserInfoFetching: false, isUserInfo: true, isChannelInfo: true,
                 info:action.payload.user, 
-                channel:action.payload.channel
+                channel:action.payload.channel,
+                setting:action.payload.setting,
               };
     })
     builder.addCase(getUserAsync.rejected, (state, action) => {
@@ -87,10 +95,36 @@ const userSlice = createSlice({
     builder.addCase(requestLoginAsync.rejected, (state, action) => {
       return { ...state, isError: true,  isUserLoginFetching: false, isLogin: false};
     })
+
+    //getUserSettingAsync
+    builder.addCase(getUserSettingAsync.pending, (state, action) => {
+      return { ...state, isError: false, isUserSettingFetching: true};
+    })
+    builder.addCase(getUserSettingAsync.fulfilled, (state, action) => {
+      return { ...state, isError: false, isUserSettingFetching: false,
+        setting:action.payload.setting
+      };
+    })
+    builder.addCase(getUserSettingAsync.rejected, (state, action) => {
+      return { ...state, isError: true,  isUserSettingFetching: false};
+    })
+
+    //setUserSettingAsync
+    builder.addCase(setUserSettingAsync.pending, (state, action) => {
+      return { ...state, isError: false, isUserSettingFetching: true, isLogin: false };
+    })
+    builder.addCase(setUserSettingAsync.fulfilled, (state, action) => {
+      return { ...state, isError: false, isUserSettingFetching: false,
+        setting:action.payload.setting
+      };
+    })
+    builder.addCase(setUserSettingAsync.rejected, (state, action) => {
+      return { ...state, isError: true,  isUserSettingFetching: false, isLogin: false};
+    })
   }
 })
 
-export const requestLoginAsync = createAsyncThunk(`${name}/LOGIN/GET`, async (data) =>{
+export const requestLoginAsync = createAsyncThunk(`${name}/LOGIN/POST`, async (data) =>{
   const response = await API.user.requestLogin(data);
 
   const accessToken = response.data.data;
@@ -100,6 +134,32 @@ export const requestLoginAsync = createAsyncThunk(`${name}/LOGIN/GET`, async (da
   } 
 
   return;
+})
+
+export const setUserSettingAsync = createAsyncThunk(`${name}/SETTING/PUT`, async (data) =>{
+  const response = await API.user.setUserSetting(data);
+
+  const info = {
+    setting: {
+      isSlackWebHook: response.data.data.slackWebHook,
+      slackWebHookUrl: response.data.data.slackWebHookUrl,
+    }
+  }
+  
+  return info;
+})
+
+export const getUserSettingAsync = createAsyncThunk(`${name}/SETTING/GET`, async () =>{
+  const response = await API.user.getUserInfo();
+  
+  const info = {
+    setting: {
+      isSlackWebHook: response.data.data.slackWebHook,
+      slackWebHookUrl: response.data.data.slackWebHookUrl 
+    }
+  }
+
+  return info;
 })
 
 export const getUserAsync = createAsyncThunk(`${name}/GET`, async () =>{
@@ -113,6 +173,10 @@ export const getUserAsync = createAsyncThunk(`${name}/GET`, async () =>{
     channel: {
       channelList : response.data.data.subscribeList,
       currentChannel : response.data.data.currentChannel,
+    },
+    setting: {
+      isSlackWebHook: response.data.data.slackWebHook,
+      slackWebHookUrl: response.data.data.slackWebHookUrl 
     }
   }
 

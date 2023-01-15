@@ -34,7 +34,7 @@ function WrapRoute(props){
 
   useEffect(()=>{
     if(redirectCon){
-      navigate('/login');
+      navigate('/logout');
     }
   },[redirectCon, navigate])
   
