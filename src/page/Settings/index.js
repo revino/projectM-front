@@ -7,6 +7,7 @@ import { Box, Tab, Tabs } from '@mui/material'
 
 import ChannelSetting from './ChannelSetting'
 import Others from './Others'
+import AlarmList from './AlarmList'
 
 const Root = styled('div')(({theme})=>({
   height: '100%',
@@ -23,6 +24,11 @@ const tabs = {
     value : 1,
     label : 'other',
     component : <Others/>,
+  },
+  alarmlist: {
+    value : 2,
+    label : 'Alarm',
+    component : <AlarmList/>,
   }
 }
 

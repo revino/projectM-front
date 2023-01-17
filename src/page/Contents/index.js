@@ -2,8 +2,8 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
 import { styled } from '@mui/system'
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, IconButton, Skeleton, TextareaAutosize, TextField, Typography } from '@mui/material';
-import { Add, ArrowBack, Delete, SyncAlt } from '@mui/icons-material';
+import { Button, CircularProgress, IconButton, Skeleton, TextareaAutosize, TextField, Tooltip, Typography } from '@mui/material';
+import { Add, AlarmOn, ArrowBack, Delete, QuestionMark, SyncAlt } from '@mui/icons-material';
 
 import API from '../../api/setting';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
@@ -59,6 +59,7 @@ export default function Contents(props) {
     writerEmail: '',
     startDate: '',
     endDate: '',
+    subscribe: false,
   });
   
   const handleExpanded = (panel) => (event, isExpanded) => {
@@ -97,6 +98,7 @@ export default function Contents(props) {
       writerEmail: data.writerEmail,
       startDate: data.startDate,
       endDate: data.endDate,
+      subscribe: data.subscribe,
     })
 
   }, [itemId]);
@@ -108,6 +110,39 @@ export default function Contents(props) {
     })
     
     navigate(-1);
+  }
+
+  const handleItemAlarm = async (id, e) =>{
+
+    setItemInfo(null);
+
+    let response;
+
+    if(e.target.value === 'true'){
+      response = await API.item.alarmUnsetItem({
+        id : id,
+      })
+    }
+    else{
+      response = await API.item.alarmSetItem({
+        id : id,
+      })
+    }
+
+    const data = response.data.data;
+
+    setItemInfo(data);
+
+    setInputs({
+      id: data.id,
+      name: data.name,
+      status: data.status,
+      writerEmail: data.writerEmail,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      subscribe: data.subscribe,
+    })
+    
   }
 
   const checkForm = ()=>{
@@ -171,38 +206,59 @@ export default function Contents(props) {
         <IconButton size='large' color="primary" aria-label="back" onClick={handleBack}>
           <ArrowBack></ArrowBack>
         </IconButton>
+        {!itemInfo? 
+        <Grid item xs={12} sm={12} md ={12} lg={12} xl={12}>
+          <CircularProgress />
+        </Grid> :
         <Grid item xs={12} sm={12} md ={12} lg={12} xl={12}>
           <Button 
-            variant="outlined" size="large" color="primary" 
-            onClick={handleItemUpdate} 
-            startIcon={<SyncAlt/>} 
-            sx={{
-              margin: (theme)=> theme.spacing(1,1,1,0)
-            }}  
-          >
-            업데이트
-          </Button>
-          <Button 
-            variant="outlined" size="large" color="primary" 
-            onClick={handleAdd} 
-            startIcon={<Add/>} 
-            sx={{
-              margin: (theme)=> theme.spacing(1)
-            }}  
-          >
-            컨텐츠
-          </Button>
-          <Button 
-            variant="outlined" size="large" color="secondary" 
-            onClick={handleItemRemove.bind(handleItemRemove, itemId)} 
-            startIcon={<Delete/>} 
-            sx={{
-              margin: (theme)=> theme.spacing(1)
-            }}  
-          >
-            삭제
-          </Button>
+          variant="outlined" size="large" color="primary" 
+          onClick={handleItemUpdate} 
+          startIcon={<SyncAlt/>} 
+          sx={{
+            margin: (theme)=> theme.spacing(1,1,1,0)
+          }}  
+        >
+          업데이트
+        </Button>
+        <Button 
+          variant="outlined" size="large" color="primary" 
+          onClick={handleAdd} 
+          startIcon={<Add/>} 
+          sx={{
+            margin: (theme)=> theme.spacing(1)
+          }}  
+        >
+          컨텐츠
+        </Button>
+        <Button 
+          variant="outlined" size="large" color="secondary" 
+          onClick={handleItemRemove.bind(handleItemRemove, itemId)} 
+          startIcon={<Delete/>} 
+          sx={{
+            margin: (theme)=> theme.spacing(1)
+          }}  
+        >
+          삭제
+        </Button>
+        <Button 
+          variant="outlined" size="large" color={inputs['subscribe']? 'success' : 'error'} 
+          value={inputs['subscribe']}
+          onClick={handleItemAlarm.bind(handleItemAlarm, itemId)} 
+          startIcon={<AlarmOn/>} 
+          sx={{
+            margin: (theme)=> theme.spacing(1)
+          }}  
+        >
+          알림 {inputs['subscribe']? "OFF": "ON"}
+        </Button>
+        <Tooltip title="아이템 업데이트시 알람을 원하시면 설정에서 메신저를 등록해주세요.">
+          <IconButton >
+            <QuestionMark/>
+          </IconButton>
+        </Tooltip>
         </Grid>
+        }
 
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <Typography variant="h4" sx={{
@@ -211,7 +267,8 @@ export default function Contents(props) {
           </Typography>
         </Grid>
 
-        {!itemInfo? <Skeleton variant="rectangular" width='100%' height={120} /> : feilds.map((el) => (
+        {!itemInfo? <CircularProgress /> : 
+        feilds.map((el) => (
           <Grid key={el.id} item xs={12} sm={4} md={3} lg={2} xl={2}>
             <TextField 
               key={el.id} id={el.id} label={el.label}
@@ -235,7 +292,7 @@ export default function Contents(props) {
           <Typography variant="h4" sx={{
             margin: (theme)=>theme.spacing(1,0),
           }}>
-            리스트
+            컨텐츠 리스트
           </Typography>
         </Grid>
 
@@ -243,6 +300,10 @@ export default function Contents(props) {
           <Fragment>
             {listSkeleton(7)}
           </Fragment> :
+          contentsInfo.length === 0? 
+          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+            <Typography>컨텐츠를 추가해주세요 ..</Typography> 
+          </Grid> :
           contentsInfo.map((el)=>(
             <Grid key={el.id} item xs={12} sm={12} md={12} lg={12} xl={12}>
               <StyledAccordion

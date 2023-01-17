@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 
 import { styled } from '@mui/system'
-import { Button } from '@mui/material'
+import { Button, CircularProgress, Typography } from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2';
 
 import AddModal from '../../coponent/AddModal'
@@ -109,7 +109,9 @@ export default function ChannelSetting(props) {
         </Grid>
 
         <Grid item xs={12} sm={12} md ={12} lg={10} xl={10}>
-          {!!channelList && channelList.map( (el, idx) =>{
+          {!isChannelInfo? <CircularProgress/> :
+          channelList.length ===0? <Typography>추가된 채널이 없습니다.</Typography> :
+          channelList.map( (el, idx) =>{
             return(
             <CardButton
               onClick={handleCardClick.bind(handleCardClick, el.id)}

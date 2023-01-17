@@ -61,6 +61,31 @@ const updateItem = async ({data}) => {
   );
 }
 
+const alarmSetItem = async ({data}) => {
+  const uri = `${BASE_URL}/item/alarm/${data.id}`;
+  const tokenHeader = TOKEN_HEADER();
+  return axios.post(
+      uri,
+      {},
+      {
+        headers: {...tokenHeader}
+      },
+  );
+}
+
+const alarmUnsetItem = async ({data}) => {
+  const uri = `${BASE_URL}/item/alarm/${data.id}`;
+  const tokenHeader = TOKEN_HEADER();
+  return axios.delete(
+      uri,
+      {
+        headers: {...tokenHeader}
+      },
+  );
+}
+
+
+
 
 const item = {
   getItemList: async (data) =>  await getItemList({data}),
@@ -68,6 +93,8 @@ const item = {
   createItem: async (data) =>  await createItem({data}),
   deleteItem: async (data) =>  await deleteItem({data}),
   updateItem: async (data) =>  await updateItem({data}),
+  alarmSetItem: async (data) =>  await alarmSetItem({data}),
+  alarmUnsetItem: async (data) =>  await alarmUnsetItem({data}),
 }
 
 export default item;

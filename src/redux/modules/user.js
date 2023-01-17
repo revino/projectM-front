@@ -9,9 +9,11 @@ const initialState = {
   isUserChannelFetching: false,
   isUserLoginFetching: false,
   isUserSettingFetching: false,
+  isUserAlarmFetching: false,
   isUserInfo: false,
   isChannelInfo: false,
   isUserSetting: false,
+  isAlarmInfo: false,
   isLogin: false,
   isError: false,
   info:{
@@ -26,6 +28,9 @@ const initialState = {
   setting:{
     isSlackWebHook: false,
     slackWebHookUrl: '',
+  },
+  alarm:{
+    alarmItemList: [],
   }
 };
 
@@ -59,13 +64,14 @@ const userSlice = createSlice({
   extraReducers: (builder)=>{
     //getUserAsync
     builder.addCase(getUserAsync.pending, (state, action) => {
-      return { ...state, isError: false, isUserInfoFetching: true, isUserInfo: false, isChannelInfo: false};
+      return { ...state, isError: false, isUserInfoFetching: true, isUserInfo: false, isChannelInfo: false, isUserSetting: false, isAlarmInfo:false};
     })
     builder.addCase(getUserAsync.fulfilled, (state, action) => {
-      return { ...state, isError: false, isUserInfoFetching: false, isUserInfo: true, isChannelInfo: true,
+      return { ...state, isError: false, isUserInfoFetching: false, isUserInfo: true, isChannelInfo: true, isUserSetting: true, isAlarmInfo: true,
                 info:action.payload.user, 
                 channel:action.payload.channel,
                 setting:action.payload.setting,
+                alarm:action.payload.alarm,
               };
     })
     builder.addCase(getUserAsync.rejected, (state, action) => {
@@ -121,6 +127,21 @@ const userSlice = createSlice({
     builder.addCase(setUserSettingAsync.rejected, (state, action) => {
       return { ...state, isError: true,  isUserSettingFetching: false, isLogin: false};
     })
+
+    //getAlarmAsync
+    builder.addCase(getAlarmAsync.pending, (state, action) => {
+      return { ...state, isError: false, isUserAlarmFetching: true};
+    })
+    builder.addCase(getAlarmAsync.fulfilled, (state, action) => {
+      return { ...state, isError: false, isUserAlarmFetching: false,
+        alarm:action.payload.alarm
+      };
+    })
+    builder.addCase(getAlarmAsync.rejected, (state, action) => {
+      return { ...state, isError: true,  isUserAlarmFetching: false};
+    })
+
+    
   }
 })
 
@@ -134,6 +155,18 @@ export const requestLoginAsync = createAsyncThunk(`${name}/LOGIN/POST`, async (d
   } 
 
   return;
+})
+
+export const getAlarmAsync = createAsyncThunk(`${name}/ALARM/GET`, async () =>{
+  const response = await API.user.getUserInfo();
+  
+  const info = {
+    alarm: {
+      alarmItemList : response.data.data.alarmItemList,
+    }
+  }
+
+  return info;
 })
 
 export const setUserSettingAsync = createAsyncThunk(`${name}/SETTING/PUT`, async (data) =>{
@@ -177,6 +210,9 @@ export const getUserAsync = createAsyncThunk(`${name}/GET`, async () =>{
     setting: {
       isSlackWebHook: response.data.data.slackWebHook,
       slackWebHookUrl: response.data.data.slackWebHookUrl 
+    },
+    alarm: {
+      alarmItemList : response.data.data.alarmItemList,
     }
   }
 

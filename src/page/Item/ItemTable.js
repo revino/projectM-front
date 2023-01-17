@@ -164,13 +164,14 @@ export default function ItemTable(props) {
             <Table stickyHeader sx={{ minWidth: 500 }} aria-label="item table">
               <TableHead>
                 <TableRow>
-                <StyledTableCell
+                  <StyledTableCell
                     key='func'
                     align='center'
                     style={{ width: '10px' }}
                   >
                     {" "}
                   </StyledTableCell>
+                  
                   {columns.map((column) => (
                     <StyledTableCell
                       key={column.id}
@@ -194,7 +195,7 @@ export default function ItemTable(props) {
                     onClick={handleRowClick.bind(handleRowClick, row.id)}
                   >
                     <StyledTableCell key={`${row.id}_edit`} align='center'>
-                      <Edit></Edit>
+                      <Edit />
                     </StyledTableCell>
                     {columns.map((column) => {
                       const value = row[column.id];

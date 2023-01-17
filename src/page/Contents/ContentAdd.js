@@ -49,7 +49,7 @@ export default function ContentAdd(props) {
             내용
           </Typography>
           <TextareaAutosize
-            minRows={20}
+            minRows={15}
             aria-label="content"
             placeholder="내용"
             defaultValue={content}
