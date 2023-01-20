@@ -72,13 +72,17 @@ export default function ChannelUpdate(props) {
 
   const handleChannelRemove = async (id) =>{
 
-    await API.channel.deleteChannel({
-      id : id,
-    })
-    
-    dispatch(getUserChannelAsync());
+    try {
+      await API.channel.deleteChannel({
+        id : id,
+      })
 
-    navigate('/settings')
+      dispatch(getUserChannelAsync());
+      navigate('/settings')
+
+    } catch (error) {
+      enqueueSnackbar(error.response.data.message, { variant: 'error' } ); 
+    }
 
   }
 

@@ -11,6 +11,12 @@ import StyledAccordion from '../../coponent/StyledAccordion';
 import AddModal from '../../coponent/AddModal';
 import ContentAdd from './ContentAdd';
 import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault('Asia/Seoul');
 
 const Root = styled('div')(({theme})=>({
   height: '100%',
@@ -78,6 +84,7 @@ export default function Contents(props) {
       id: itemId,
     });
 
+    console.log(response.data.data)
     setContentsInfo(response.data.data);
 
   }, [itemId]);
@@ -308,7 +315,7 @@ export default function Contents(props) {
             <Grid key={el.id} item xs={12} sm={12} md={12} lg={12} xl={12}>
               <StyledAccordion
                 id={el.id}
-                firstSummary={dayjs(el.createdAt).format("YYYY.MM.DD HH:mm")}
+                firstSummary={dayjs(el.createdAt).tz().format("YYYY.MM.DD HH:mm")}
                 secondSummary={`,작성자 : ${el.writerEmail}`}
                 expanded={expanded}
                 handleChange={handleExpanded}
