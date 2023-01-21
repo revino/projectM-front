@@ -13,6 +13,7 @@ import ContentAdd from './ContentAdd';
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+import { useSnackbar } from 'notistack';
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -140,24 +141,24 @@ export default function Contents(props) {
           id : id,
         })
       }
+
+      const data = response.data.data;
+
+      setItemInfo(data);
+  
+      setInputs({
+        id: data.id,
+        name: data.name,
+        status: data.status,
+        writerEmail: data.writerEmail,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        subscribe: data.subscribe,
+      })
+
     } catch (error) {
       enqueueSnackbar("알람 설정 실패", { variant: 'error' } ); 
-      return
     }
-
-    const data = response.data.data;
-
-    setItemInfo(data);
-
-    setInputs({
-      id: data.id,
-      name: data.name,
-      status: data.status,
-      writerEmail: data.writerEmail,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      subscribe: data.subscribe,
-    })
     
   }
 
@@ -196,6 +197,7 @@ export default function Contents(props) {
     } catch (error) {
       enqueueSnackbar(error.response.data.message, { variant: 'error' } ); 
     }
+  }
 
   const handleAdd= (event) => {
     setAddModalOpen(true);
