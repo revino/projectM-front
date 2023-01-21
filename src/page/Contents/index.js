@@ -52,6 +52,7 @@ export default function Contents(props) {
 
   const {itemId} = useParams();
   const navigate = useNavigate();
+  const {enqueueSnackbar} = useSnackbar();
 
   const [itemInfo, setItemInfo] = useState(null);
   const [contentsInfo, setContentsInfo] = useState(null);
@@ -111,11 +112,15 @@ export default function Contents(props) {
 
   const handleItemRemove = async (id) =>{
     
-    await API.item.deleteItem({
-      id : id,
-    })
-    
-    navigate(-1);
+    try {
+      await API.item.deleteItem({
+        id : id,
+      })
+      
+      navigate(-1);
+    } catch (error) {
+      enqueueSnackbar(error.response.data.message, { variant: 'error' } ); 
+    }
   }
 
   const handleItemAlarm = async (id, e) =>{
@@ -124,15 +129,20 @@ export default function Contents(props) {
 
     let response;
 
-    if(e.target.value === 'true'){
-      response = await API.item.alarmUnsetItem({
-        id : id,
-      })
-    }
-    else{
-      response = await API.item.alarmSetItem({
-        id : id,
-      })
+    try {
+      if(e.target.value === 'true'){
+        response = await API.item.alarmUnsetItem({
+          id : id,
+        })
+      }
+      else{
+        response = await API.item.alarmSetItem({
+          id : id,
+        })
+      }
+    } catch (error) {
+      enqueueSnackbar("알람 설정 실패", { variant: 'error' } ); 
+      return
     }
 
     const data = response.data.data;
@@ -178,10 +188,14 @@ export default function Contents(props) {
       endDate: inputs.endDate,
     }
 
-    await API.item.updateItem(inputValue)
-    
-    navigate(-1);
-  }
+    try {
+      await API.item.updateItem(inputValue)
+      
+      navigate(-1);
+      
+    } catch (error) {
+      enqueueSnackbar(error.response.data.message, { variant: 'error' } ); 
+    }
 
   const handleAdd= (event) => {
     setAddModalOpen(true);
