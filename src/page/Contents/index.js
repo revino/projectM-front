@@ -84,7 +84,6 @@ export default function Contents(props) {
       id: itemId,
     });
 
-    console.log(response.data.data)
     setContentsInfo(response.data.data);
 
   }, [itemId]);
